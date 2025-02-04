@@ -1,9 +1,7 @@
 <!-- markdownlint-disable MD033 MD041 -->
-<div style="text-align: center">
-    <a href="https://www.utp.edu.my/" target="_blank">
-        <img src="./assets/utp_logo.svg" height="150" alt="UTP logo" />
-    </a>
-</div>
+<p align="center" width="100%">
+    <img src="./assets/utp_logo.svg" height="150" alt="UTP logo" />
+</p>
 
 # TEB2093 Computer Security - Lab 02
 
