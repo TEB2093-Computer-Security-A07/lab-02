@@ -481,3 +481,197 @@ Malicious payload: `', Salary=30000, SSN='10213352`.
 ![Attempting to modify salary](./assets/sqli_task_04_profile_01.png)
 
 ![Failed to modify salary](./assets/sqli_task_04_profile_02.png)
+
+## Web Security
+
+### B. SQL Injection
+
+1. Capture a screenshot of the results displaied on the page after performing the SQL Injection `'OR'1'='1`.
+
+    ![User results in DVWA](./assets/web_sqli_01.png)
+
+2. Explain how the SQL Injection was able to occur.
+
+    In the source code of DVWA, the input ID is directly placed into the SQL statement.
+
+    ```php
+    /* some code */
+
+    $id = $_REQUEST['id'];
+
+    /* some code */
+
+    $query = "SELECT first_name, last_name FROM users WHERE user_id = '$id';";
+
+    $db_connection->query($query); // slightly modified to increase understanding
+
+    /* some code */
+    ```
+
+    When we passed in `' OR '1'='1`, we formed the query:
+
+    ```sql
+    SELECT first_name, last_name FROM users WHERE user_id = ''OR'1'='1';
+    ```
+
+    The `WHERE` clause will always be true, hence, all rows are fetched in `users` table are fetched.
+
+3. Suggest one countermeasure or preventive measure to mitigate this vulnerability.
+
+    We can use **prepared statements**. This will ensure that the boundary between SQL code and data is respected. Based on the code snippet from `1` above, we can change it to:
+
+    ```php
+    /* some code */
+
+    $id = $_REQUEST['id'];
+
+    /* some code */
+
+    $query = $db_connection->prepare("SELECT first_name, last_name FROM users WHERE user_id = ? LIMIT 1;");
+    $query->bindParam('i', $id);
+    $query->execute();
+    $row = $query->fetch();
+
+    /* some code */
+    ```
+
+### C. Cross-site Scripting (XSS)
+
+#### XSS (Reflected) on DVWA
+
+![Normal form usage](./assets/web_xss_01.jpeg)
+
+![Malicious input containing JavaScript code](./assets/web_xss_02.jpeg)
+
+![Malicious JavaScript code being executed](./assets/web_xss_03.png)
+
+DVWA vulnerable code snippet:
+
+```php
+/* some code */
+
+header ("X-XSS-Protection: 0");
+
+/* some code */
+
+$html .= '<pre>Hello ' . $_GET['name'] . '</pre>';
+
+/* some code */
+```
+
+When we submit a malicious JavaScript code, it is appended into the HTML content in the response, and the browser will see it as an inline JavaScript code that should be executed.
+
+Nowadays, we have preventative methods such as HTTP header `X-XSS-Protection` enabled by default. Hence, to purposely make the web app vulnerable, the header needs to be set to `0`.
+
+#### Experiment 1: Stored XSS
+
+![Malicious input in comment form](./assets/web_xss_04.png)
+
+Malicious JavaScript code gets executed even on subsequent visit to the page:
+
+![Stored malicious code gets executed](./assets/web_xss_05.png)
+
+```txt
+$ cat comments.txt
+Normal comment :D
+<script>alert('XSS')</script>
+```
+
+This is because the malicious code is stored in the database, in this case, it is `comments.txt`. Then, on every page visit, the comments are loaded from the database/`comments.txt`, which then gets appended into the response HTML content.
+
+This causes the code to be executed on all users that visit the page.
+
+Stored XSS is very dangerous as a bad actor may upload malicious code to be executed on other users' browser, enabling cookie steals, session hijacking, and more.
+
+To prevent malicious code from being executed by the client browser, we can change the source code from displaying the special characters as is, to the equivalent HTML URL encoded characters.
+
+Old code snippet:
+
+```php
+echo '<p>' . $comment . '</p>';
+```
+
+Old response:
+
+```html
+<p><script>alert('XSS')</script></p>
+```
+
+New code snippet:
+
+```php
+echo '<p>' . htmlspecialchars($comment, ENT_QUOTES, 'UTF-8') .'</p>';
+```
+
+New response:
+
+```html
+<p>&lt;script&gt;alert(&#039;XSS&#039;)&lt;/script&gt;</p>
+```
+
+This prevents the browser from intepreting the malicious code as inline JavaScript code that needs to be executed.
+
+#### Experiment 2: Reflected XSS
+
+![Malicious input in search box](./assets/web_xss_06.png)
+
+![Malicious input gets reflected/executed](./assets/web_xss_07.png)
+
+In reflected XSS, a bad actor can arbitrarily execute malicious code on the client side. This may cause information that is not meant to be displayed to the user being exposed.
+
+Old code snippet:
+
+```php
+echo "<p>Results for: " . $_GET['search'] . "</p>";
+```
+
+Old response:
+
+```html
+<p>Results for: <script>alert('Reflected XSS')</script></p>
+```
+
+New code snippet:
+
+```php
+echo "<p>Results for: " . htmlspecialchars($_GET['search'], ENT_QUOTES, 'UTF-8') . "</p>";
+```
+
+New response:
+
+```html
+<p>Results for: &lt;script&gt;alert(&#039;Reflected XSS&#039;)&lt;/script&gt;</p>
+```
+
+Browser will not parse the malicious input as code, preventing XSS from occuring.
+
+#### Experiment 3: DOM-based XSS
+
+This particular experiment is impossible as URLs are automatically encoded to make it into a valid URL.
+
+For example:
+
+```txt
+http://localhost/dom_xss.html?name=alert('DOM XSS');</script>
+```
+
+gets encoded to:
+
+```txt
+http://localhost/dom_xss.html?name=%3Cscript%3Ealert(%27DOM%20XSS%27);%3C/script%3E
+```
+
+When the URL parameter is being read by the client-side JavaScript code, the encoded value is read.
+
+Even though the experiment is supposed to demonstrate that malicious code can be inserted into the DOM, a different method should be used instead of URL parameters.
+
+Instead of using URL parameters, we can use an input box to take malicious input, and inserting it in the DOM element.
+
+With that said, no mitigation methods are needed for this particular code despite the instructions saying that we should replace the special characters to HTML-encoded representation (essentially replicating `htmlspecialchars` on client-side and using JavaScript).
+
+### Extra Discussion
+
+1. Choose ONE (1) of the OWASP TOP 10 Web Vulnerabilities besides SQLI and XSS.
+2. Explain the vulnerability (the mechanism).
+3. Discuss the effect or impact.
+4. Propose the countermeasure or preventive measure to mitigate this vulnerability.
