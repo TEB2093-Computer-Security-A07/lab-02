@@ -672,6 +672,17 @@ With that said, no mitigation methods are needed for this particular code despit
 ### Extra Discussion
 
 1. Choose ONE (1) of the OWASP TOP 10 Web Vulnerabilities besides SQLI and XSS.
+
+    Server-Side Request Forgery (SSRF). It is a web security vulnerabilty that allow attackers to trick a server into making unintended request to internal or external resources. For example, an attacker could use SSRF to access a server's internal network or read sensitive files on the server.
+         
 2. Explain the vulnerability (the mechanism).
+
+    SSRF happens when a web application does not properly validate user provided input like URL for the server to make requests to other systems. Attackers can take advantage of this by sending malicious input, such as a URL pointing to an internal system or even a cloud metadata service. The server then will make request to the unintended destination, which will lead to unauthorized access by the attackers.
+
 3. Discuss the effect or impact.
+
+    SSRF attacks can cause serious impacts depending on what the server can access. Attackers may access sensitive and personal data like cloud metadata, credentials database or even internal files. For example, attackers can have admin access by modifying the request to the admin URL local to the server. 
+
 4. Propose the countermeasure or preventive measure to mitigate this vulnerability.
+
+    One of the preventive measure for SSRF is to implement input filtering with blacklists and whitelists. For example, a blacklist can block inputs that contains risky URLs, IP addresses or keywords like internal IPs or admin page URLs. Furthermore, we can also implement whitelisting at the same time. With whitelisting, the server only allows requests to trusted domains or resources that are on the approved list.    
