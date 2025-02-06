@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <p align="center" width="100%">
-    <img src="./assets/utp_logo.svg" height="150" alt="UTP logo" />
+    <img src="./assets/utp_logo_cropped.svg" height="100" alt="UTP logo" />
 </p>
 
 # TEB2093 Computer Security - Lab 02
