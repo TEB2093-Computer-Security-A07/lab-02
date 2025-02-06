@@ -12,6 +12,37 @@
 - Ahmad Anas Bin Azhar (22005996)
 - Muhammad Hanis Afifi Bin Azmi (22001602)
 
+## Table of Contents
+
+- [TEB2093 Computer Security - Lab 02](#teb2093-computer-security---lab-02)
+  - [Members](#members)
+  - [Table of Contents](#table-of-contents)
+  - [SQL Injection](#sql-injection)
+    - [Task 1](#task-1)
+      - [Task 1.1](#task-11)
+      - [Task 1.2](#task-12)
+      - [Task 1.3](#task-13)
+      - [Task 1.4](#task-14)
+    - [Task 2](#task-2)
+      - [Task 2.1](#task-21)
+      - [Task 2.2](#task-22)
+      - [Task 2.3](#task-23)
+    - [Task 3](#task-3)
+      - [Task 3.1](#task-31)
+      - [Task 3.2](#task-32)
+      - [Task 3.3](#task-33)
+    - [Task 4](#task-4)
+      - [Fixing Login](#fixing-login)
+      - [Fixing Edit Profile](#fixing-edit-profile)
+  - [Web Security](#web-security)
+    - [B. SQL Injection](#b-sql-injection)
+    - [C. Cross-site Scripting (XSS)](#c-cross-site-scripting-xss)
+      - [XSS (Reflected) on DVWA](#xss-reflected-on-dvwa)
+      - [Experiment 1: Stored XSS](#experiment-1-stored-xss)
+      - [Experiment 2: Reflected XSS](#experiment-2-reflected-xss)
+      - [Experiment 3: DOM-based XSS](#experiment-3-dom-based-xss)
+    - [Extra Discussion](#extra-discussion)
+
 ## SQL Injection
 
 ### Task 1
@@ -674,15 +705,15 @@ With that said, no mitigation methods are needed for this particular code despit
 1. Choose ONE (1) of the OWASP TOP 10 Web Vulnerabilities besides SQLI and XSS.
 
     Server-Side Request Forgery (SSRF). It is a web security vulnerabilty that allow attackers to trick a server into making unintended request to internal or external resources. For example, an attacker could use SSRF to access a server's internal network or read sensitive files on the server.
-         
+
 2. Explain the vulnerability (the mechanism).
 
     SSRF happens when a web application does not properly validate user provided input like URL for the server to make requests to other systems. Attackers can take advantage of this by sending malicious input, such as a URL pointing to an internal system or even a cloud metadata service. The server then will make request to the unintended destination, which will lead to unauthorized access by the attackers.
 
 3. Discuss the effect or impact.
 
-    SSRF attacks can cause serious impacts depending on what the server can access. Attackers may access sensitive and personal data like cloud metadata, credentials database or even internal files. For example, attackers can have admin access by modifying the request to the admin URL local to the server. 
+    SSRF attacks can cause serious impacts depending on what the server can access. Attackers may access sensitive and personal data like cloud metadata, credentials database or even internal files. For example, attackers can have admin access by modifying the request to the admin URL local to the server.
 
 4. Propose the countermeasure or preventive measure to mitigate this vulnerability.
 
-    One of the preventive measure for SSRF is to implement input filtering with blacklists and whitelists. For example, a blacklist can block inputs that contains risky URLs, IP addresses or keywords like internal IPs or admin page URLs. Furthermore, we can also implement whitelisting at the same time. With whitelisting, the server only allows requests to trusted domains or resources that are on the approved list.    
+    One of the preventive measure for SSRF is to implement input filtering with blacklists and whitelists. For example, a blacklist can block inputs that contains risky URLs, IP addresses or keywords like internal IPs or admin page URLs. Furthermore, we can also implement whitelisting at the same time. With whitelisting, the server only allows requests to trusted domains or resources that are on the approved list.
